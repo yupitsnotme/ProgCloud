@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ProgCloud.Models.Profile>
+
+@{
+    ViewData["Title"] = "Profile";
+}
+<div class="row">
+    <button class="btn btn-primary" onclick="location.href='@Url.Action("Create")'"> Upload File</button>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Thumbnail</th>
+                    <th scope="col">Video Name</th>
+                    <th scope="col">Bucket Name</th>
+                    <th scope="col">Uploader</th>
+                    <th scope="col">Timestamp</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+
+            @{
+                var i = 1;
+            }
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <th scope="row">@(i++)</th>
+                        <td>@Html.DisplayFor(x => item.ImageUrl)</td>
+                        <td>@Html.DisplayFor(x => item.VideoStorageName)</td>
+                        <td>@Html.DisplayFor(x => item.BucketName)</td>
+                        <td>@Html.DisplayFor(x => item.Uploader)</td>
+                        <td>@Html.DisplayFor(x => item.DateTime)</td>
+                        <td>@Html.DisplayFor(x => item.Status)</td>
+                        <td>
+                            <form asp-action="Download" method="post">
+                                <div class="form-group">
+                                    <input type="hidden" name="videoName" value="@item.VideoUrl">
+                                    <button class="btn btn-primary" type="submit">Download</button>
+                                </div>
+                            </form>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
