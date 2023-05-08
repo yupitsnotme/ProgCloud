@@ -30,7 +30,7 @@
                 {
                     <tr>
                         <th scope="row">@(i++)</th>
-                        <td>@Html.DisplayFor(x => item.ImageUrl)</td>
+                        <td><img src="@Html.DisplayFor(x => item.ImageUrl)" /></td>
                         <td>@Html.DisplayFor(x => item.VideoStorageName)</td>
                         <td>@Html.DisplayFor(x => item.BucketName)</td>
                         <td>@Html.DisplayFor(x => item.Uploader)</td>
@@ -43,7 +43,12 @@
                                     <button class="btn btn-primary" type="submit">Download</button>
                                 </div>
                             </form>
-
+                            <form asp-action="TranscribeVideo" method="post">
+                                <div class="form-group">
+                                    <input type="hidden" name="videoName" value="@item.VideoStorageName">
+                                    <button class="btn btn-primary" type="submit">Transcribe</button>
+                                </div>
+                            </form>
                         </td>
                     </tr>
                 }

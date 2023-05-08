@@ -13,14 +13,15 @@ namespace ProgCloud.DataAccess
         Topic topic;
         public PubSubRepository(string projectId)
         {
-            topicName = TopicName.FromProjectTopic(projectId, "messages");
+            topicName = TopicName.FromProjectTopic(projectId, "transcribe");
+
             if (topicName == null)
             {
                 PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
 
                 try
                 {
-                    topicName = new TopicName(projectId, "messages");
+                    topicName = new TopicName(projectId, "transcribe");
                     topic = publisher.CreateTopic(topicName);
                 }
                 catch (Exception ex)
@@ -31,7 +32,7 @@ namespace ProgCloud.DataAccess
             }
         }
 
-        public async Task<string> PushMessage(Profile p)
+        public async Task<string> PushMessage(string videoName)
         {
 
             PublisherClient publisher = await PublisherClient.CreateAsync(topicName);
@@ -39,7 +40,7 @@ namespace ProgCloud.DataAccess
             var pubsubMessage = new PubsubMessage
             {
                 // The data is any arbitrary ByteString. Here, we're using text.
-                Data = ByteString.CopyFromUtf8(JsonConvert.SerializeObject(p)),
+                Data = ByteString.CopyFromUtf8(JsonConvert.SerializeObject(videoName)),
                 // The attributes provide metadata in a string-to-string dictionary.
                 Attributes =
                 {

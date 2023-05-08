@@ -10,7 +10,6 @@ using ProgCloud.DataAccess;
 using ProgCloud.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace ProgCloud.Controllers
 {
@@ -44,9 +43,10 @@ namespace ProgCloud.Controllers
             return View(list);
         }
 
+
         [HttpPost]
         [Authorize]
-        public IActionResult Create(IFormFile file, [FromServices] IConfiguration config) 
+        public IActionResult Create(IFormFile file, [FromServices] IConfiguration config)
         {
             _logger.LogInformation($"User {User.Identity.Name} is uploading video");
 
@@ -59,7 +59,7 @@ namespace ProgCloud.Controllers
                     string bucketName = config["bucket"].ToString();
                     if (file != null)
                     {
-                        //1. Upload the e-book (file) in the cloud bucket
+                        //1. Upload the file in the cloud bucket
                         var storage = StorageClient.Create();
                         using var fileStream = file.OpenReadStream();
 
@@ -74,8 +74,6 @@ namespace ProgCloud.Controllers
                         var videoUrl = $"https://storage.googleapis.com/{bucketName}/{newFilename}";
                         _logger.LogInformation($"File {file.FileName} with new filename {newFilename} can be found here {videoUrl}");
 
-                        fileStream.Close();
-
 
                         //Thumbnail Creation & saving
                         string thumbnailName = newFilename + "_thumbnail.jpg";
@@ -84,7 +82,7 @@ namespace ProgCloud.Controllers
                         _logger.LogInformation($"Attempting to create and upload thumbnail");
 
                         // Upload the thumbnail image to Cloud Storage
-                        //_videoRepo.GenerateThumbnail(bucketName, videoUrl, thumbnailUrl);
+                        //_videoRepo.GenerateThumbnail(bucketName, videoUrl, thumbnailName);
 
                         _logger.LogInformation($"Thumbnail {file.FileName} with new filename {thumbnailName} can be found here {thumbnailUrl}");
 
@@ -99,9 +97,7 @@ namespace ProgCloud.Controllers
                             DateTime = DateTime.Now.ToString(),
                             Uploader = User.Identity.Name,
                             BucketName = bucketName,
-                            ///////////////////
-                            Status = "READY", //TODO
-                            ///////////////////
+                            Status = "READY", 
                             ImageUrl = thumbnailUrl,
                             VideoUrl = videoUrl
                         };
@@ -140,9 +136,14 @@ namespace ProgCloud.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Transcribe(string videoName) {
-            _videoRepo.TranscribeVideo(videoName);
+        public async Task<IActionResult> TranscribeVideo(string videoName)
+        {
+
+            await _pubSub.PushMessage(videoName);
+
+
             return RedirectToAction("Index");
+
         }
     }
 }

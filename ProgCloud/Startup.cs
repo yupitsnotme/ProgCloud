@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,7 +54,7 @@ namespace ProgCloud
                     options.ClientSecret = googleAuthNSection["ClientSecret"];
                 });
             services.AddScoped<FirestoreVideosRepository>(provider => new FirestoreVideosRepository(projectId));
-
+            services.AddScoped<PubSubRepository>(provider => new PubSubRepository(projectId));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
